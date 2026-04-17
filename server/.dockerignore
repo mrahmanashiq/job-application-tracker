@@ -4,6 +4,7 @@ dist
 .env
 .env.*
 *.log
+*.tsbuildinfo
 coverage
 .nyc_output
 .vscode

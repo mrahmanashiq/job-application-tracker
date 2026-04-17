@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { JobApplicationModule } from './job-application/job-application.module';
+import { HealthController } from './health.controller';
 
 @Module({
   imports: [
@@ -23,5 +24,6 @@ import { JobApplicationModule } from './job-application/job-application.module';
     }]),
     JobApplicationModule,
   ],
+  controllers: [HealthController],
 })
 export class AppModule {}

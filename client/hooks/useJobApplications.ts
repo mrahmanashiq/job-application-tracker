@@ -38,10 +38,12 @@ export const useCreateJobApplication = () => {
 
 export const useUpdateJobApplication = () => {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: async ({ id, ...application }: JobApplication & { id: string }) => {
-      const { data } = await api.put(`/job-applications/${id}`, application)
+      const { data } = await api.patch(`/job-applications/${id}`, application, {
+        params: { userId: application.userId },
+      })
       return data
     },
     onSuccess: () => {
@@ -52,10 +54,10 @@ export const useUpdateJobApplication = () => {
 
 export const useDeleteJobApplication = () => {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
-    mutationFn: async (id: string) => {
-      await api.delete(`/job-applications/${id}`)
+    mutationFn: async ({ id, userId }: { id: string; userId: string }) => {
+      await api.delete(`/job-applications/${id}`, { params: { userId } })
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['jobApplications'] })

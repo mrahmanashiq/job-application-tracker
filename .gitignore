@@ -142,3 +142,18 @@ dist/
 # Temporary files
 tmp/
 temp/
+
+# Claude Code local state
+.claude/
+CLAUDE.md
+
+# Playwright MCP artifacts
+.playwright-mcp/
+test-results/
+playwright-report/
+*.png
+!public/**/*.png
+!client/public/**/*.png
+
+# Memory / notes
+memory/

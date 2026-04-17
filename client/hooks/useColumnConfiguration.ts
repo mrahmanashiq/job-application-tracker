@@ -10,6 +10,7 @@ const DEFAULT_COLUMNS: Column[] = [
   { key: 'interviewDate', label: 'Interview Date', visible: true, required: false, width: 120 },
   { key: 'salary', label: 'Salary', visible: true, required: false, width: 100 },
   { key: 'location', label: 'Location', visible: true, required: false, width: 120 },
+  { key: 'techStack', label: 'Tech Stack', visible: true, required: false, width: 200 },
   { key: 'workType', label: 'Work Type', visible: false, required: false, width: 100 },
   { key: 'resumeUsed', label: 'Resume Used', visible: false, required: false, width: 120 },
 ]
@@ -21,8 +22,10 @@ export const useColumnConfiguration = () => {
     const savedColumns = localStorage.getItem('jobTracker_columnConfig')
     if (savedColumns) {
       try {
-        const parsedColumns = JSON.parse(savedColumns)
-        setColumns(parsedColumns)
+        const parsedColumns: Column[] = JSON.parse(savedColumns)
+        const savedKeys = new Set(parsedColumns.map(c => c.key))
+        const missing = DEFAULT_COLUMNS.filter(c => !savedKeys.has(c.key))
+        setColumns([...parsedColumns, ...missing])
       } catch (error) {
         console.error('Error parsing column configuration:', error)
         setColumns(DEFAULT_COLUMNS)

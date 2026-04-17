@@ -101,6 +101,9 @@ export class JobApplication extends Document {
   @Prop()
   location?: string;
 
+  @Prop({ type: [String], default: [] })
+  techStack?: string[];
+
   @Prop({ enum: WorkType })
   workType?: WorkType;
 

@@ -10,6 +10,7 @@ export interface JobApplication {
   jobUrl?: string
   salary?: string
   location?: string
+  techStack?: string[]
   workType?: WorkType
   jobType?: JobType
   contactPerson?: string

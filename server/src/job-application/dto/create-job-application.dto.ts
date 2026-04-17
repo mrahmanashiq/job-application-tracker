@@ -1,6 +1,9 @@
 import { IsString, IsOptional, IsEnum, IsDateString, IsArray, ValidateNested, IsUrl, IsEmail } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApplicationStatus, WorkType, JobType, InterviewType, QuestionCategory, QuestionDifficulty } from '../schemas/job-application.schema';
+
+const emptyStringToUndefined = ({ value }: { value: unknown }) =>
+  typeof value === 'string' && value.trim() === '' ? undefined : value;
 
 export class InterviewQuestionDto {
   @IsString()
@@ -18,6 +21,7 @@ export class InterviewQuestionDto {
   difficulty?: QuestionDifficulty;
 
   @IsOptional()
+  @Transform(emptyStringToUndefined)
   @IsUrl()
   leetcodeLink?: string;
 }
@@ -47,6 +51,7 @@ export class CreateJobApplicationDto {
   resumeUsed?: string;
 
   @IsOptional()
+  @Transform(emptyStringToUndefined)
   @IsUrl()
   jobUrl?: string;
 
@@ -57,6 +62,11 @@ export class CreateJobApplicationDto {
   @IsOptional()
   @IsString()
   location?: string;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  techStack?: string[];
 
   @IsOptional()
   @IsEnum(WorkType)
@@ -71,6 +81,7 @@ export class CreateJobApplicationDto {
   contactPerson?: string;
 
   @IsOptional()
+  @Transform(emptyStringToUndefined)
   @IsEmail()
   contactEmail?: string;
 

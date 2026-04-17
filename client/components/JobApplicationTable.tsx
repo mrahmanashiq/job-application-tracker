@@ -66,6 +66,20 @@ export default function JobApplicationTable({
         return application.salary || '-'
       case 'location':
         return application.location || '-'
+      case 'techStack':
+        if (!application.techStack || application.techStack.length === 0) return '-'
+        return (
+          <div className="flex flex-wrap gap-1">
+            {application.techStack.map((tech, idx) => (
+              <span
+                key={`${tech}-${idx}`}
+                className="inline-flex px-2 py-0.5 text-xs font-medium rounded bg-primary-50 text-primary-700"
+              >
+                {tech}
+              </span>
+            ))}
+          </div>
+        )
       case 'workType':
         return application.workType || '-'
       case 'resumeUsed':

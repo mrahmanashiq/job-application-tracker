@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import DatePicker from 'react-datepicker'
 import Select from 'react-select'
+import CreatableSelect from 'react-select/creatable'
 import { XMarkIcon } from '@heroicons/react/24/outline'
+import axios from 'axios'
 import {
   JobApplication,
   ApplicationStatus,
@@ -28,7 +30,8 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
   const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestion[]>(
     application?.interviewQuestions || []
   )
-  
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
   const createMutation = useCreateJobApplication()
   const updateMutation = useUpdateJobApplication()
   
@@ -44,6 +47,7 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
       jobUrl: application?.jobUrl || '',
       salary: application?.salary || '',
       location: application?.location || '',
+      techStack: application?.techStack || [],
       workType: application?.workType || WorkType.REMOTE,
       jobType: application?.jobType || JobType.FULL_TIME,
       contactPerson: application?.contactPerson || '',
@@ -111,6 +115,7 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
   }
 
   const onSubmit = async (data: FormData) => {
+    setSubmitError(null)
     try {
       const formData = {
         ...data,
@@ -123,10 +128,17 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
       } else {
         await createMutation.mutateAsync(formData)
       }
-      
+
       onClose()
     } catch (error) {
-      console.error('Error saving application:', error)
+      let message = 'Unable to save application. Please try again.'
+      if (axios.isAxiosError(error)) {
+        const data = error.response?.data as { message?: string | string[] } | undefined
+        if (Array.isArray(data?.message)) message = data!.message.join('; ')
+        else if (typeof data?.message === 'string') message = data!.message
+        else if (error.message) message = error.message
+      }
+      setSubmitError(message)
     }
   }
 
@@ -146,6 +158,14 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-6">
+          {submitError && (
+            <div
+              role="alert"
+              className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800"
+            >
+              {submitError}
+            </div>
+          )}
           {/* Basic Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -199,7 +219,7 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
                 render={({ field }) => (
                   <DatePicker
                     selected={field.value ? new Date(field.value) : null}
-                    onChange={(date) => field.onChange(date)}
+                    onChange={(date: Date | null) => field.onChange(date)}
                     className="form-input"
                     dateFormat="MMM dd, yyyy"
                   />
@@ -277,6 +297,25 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
                 )}
               />
             </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700">Tech Stack</label>
+              <Controller
+                name="techStack"
+                control={control}
+                render={({ field }) => (
+                  <CreatableSelect<{ value: string; label: string }, true>
+                    isMulti
+                    value={(field.value || []).map((tech: string) => ({ value: tech, label: tech }))}
+                    onChange={(selected) =>
+                      field.onChange(selected.map(option => option.value))
+                    }
+                    className="mt-1"
+                    placeholder="Type a technology and press Enter (e.g., React, Node.js, PostgreSQL)"
+                  />
+                )}
+              />
+            </div>
           </div>
 
           {/* Job Description */}
@@ -322,7 +361,7 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
                 render={({ field }) => (
                   <DatePicker
                     selected={field.value ? new Date(field.value) : null}
-                    onChange={(date) => field.onChange(date)}
+                    onChange={(date: Date | null) => field.onChange(date)}
                     className="form-input"
                     dateFormat="MMM dd, yyyy HH:mm"
                     showTimeSelect
@@ -446,7 +485,7 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
                 render={({ field }) => (
                   <DatePicker
                     selected={field.value ? new Date(field.value) : null}
-                    onChange={(date) => field.onChange(date)}
+                    onChange={(date: Date | null) => field.onChange(date)}
                     className="form-input"
                     dateFormat="MMM dd, yyyy"
                   />
@@ -462,7 +501,7 @@ export default function JobApplicationForm({ application, onClose, userId }: Job
                 render={({ field }) => (
                   <DatePicker
                     selected={field.value ? new Date(field.value) : null}
-                    onChange={(date) => field.onChange(date)}
+                    onChange={(date: Date | null) => field.onChange(date)}
                     className="form-input"
                     dateFormat="MMM dd, yyyy"
                   />

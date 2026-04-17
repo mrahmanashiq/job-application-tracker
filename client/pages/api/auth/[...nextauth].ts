@@ -8,6 +8,7 @@ const clientPromise = client.connect()
 
 export default NextAuth({
   adapter: MongoDBAdapter(clientPromise),
+  session: { strategy: 'database' },
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,

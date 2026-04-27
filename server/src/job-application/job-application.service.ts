@@ -29,17 +29,20 @@ export class JobApplicationService {
     userId: string,
     page: number = 1,
     limit: number = 25,
+    status?: string,
   ): Promise<PaginatedResult<JobApplication>> {
     const skip = (page - 1) * limit;
-    
+    const filter: Record<string, unknown> = { userId };
+    if (status) filter.applicationStatus = status;
+
     const [data, total] = await Promise.all([
       this.jobApplicationModel
-        .find({ userId })
+        .find(filter)
         .sort({ applicationDate: -1 })
         .skip(skip)
         .limit(limit)
         .exec(),
-      this.jobApplicationModel.countDocuments({ userId }).exec(),
+      this.jobApplicationModel.countDocuments(filter).exec(),
     ]);
 
     const totalPages = Math.ceil(total / limit);

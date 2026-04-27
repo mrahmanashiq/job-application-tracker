@@ -3,7 +3,7 @@ import { useSession } from 'next-auth/react'
 import JobApplicationForm from './JobApplicationForm'
 import JobApplicationTable from './JobApplicationTable'
 import ColumnConfiguration from './ColumnConfiguration'
-import { JobApplication } from '../types/jobApplication'
+import { JobApplication, ApplicationStatus } from '../types/jobApplication'
 import { useJobApplications } from '../hooks/useJobApplications'
 
 export default function Dashboard() {
@@ -12,6 +12,7 @@ export default function Dashboard() {
   const [editingApplication, setEditingApplication] = useState<JobApplication | null>(null)
   const [showColumnConfig, setShowColumnConfig] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
+  const [statusFilter, setStatusFilter] = useState<string>('')
   const pageSize = 25
 
   const {
@@ -19,7 +20,12 @@ export default function Dashboard() {
     isLoading,
     error,
     refetch
-  } = useJobApplications(session?.userId, currentPage, pageSize)
+  } = useJobApplications(session?.userId, currentPage, pageSize, statusFilter || undefined)
+
+  const handleStatusFilterChange = (value: string) => {
+    setStatusFilter(value)
+    setCurrentPage(1)
+  }
 
   const handleAddApplication = () => {
     setEditingApplication(null)
@@ -57,7 +63,20 @@ export default function Dashboard() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <h1 className="text-2xl font-bold text-gray-900">Job Applications</h1>
-        <div className="flex flex-col sm:flex-row gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 items-stretch sm:items-center">
+          <select
+            value={statusFilter}
+            onChange={(e) => handleStatusFilterChange(e.target.value)}
+            aria-label="Filter by status"
+            className="border border-gray-300 rounded-md text-sm px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Statuses</option>
+            {Object.values(ApplicationStatus).map((status) => (
+              <option key={status} value={status}>
+                {status.replace('_', ' ').toUpperCase()}
+              </option>
+            ))}
+          </select>
           <button
             onClick={() => setShowColumnConfig(true)}
             className="btn-secondary text-sm"

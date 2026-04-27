@@ -13,6 +13,8 @@ const DEFAULT_COLUMNS: Column[] = [
   { key: 'techStack', label: 'Tech Stack', visible: true, required: false, width: 200 },
   { key: 'workType', label: 'Work Type', visible: false, required: false, width: 100 },
   { key: 'resumeUsed', label: 'Resume Used', visible: false, required: false, width: 120 },
+  { key: 'notes', label: 'Notes', visible: false, required: false, width: 240 },
+  { key: 'updatedAt', label: 'Last Updated', visible: false, required: false, width: 140 },
 ]
 
 export const useColumnConfiguration = () => {

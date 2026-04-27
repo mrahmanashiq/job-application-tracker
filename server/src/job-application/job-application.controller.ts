@@ -27,10 +27,11 @@ export class JobApplicationController {
     @Query('userId') userId: string,
     @Query('page') page?: string,
     @Query('limit') limit?: string,
+    @Query('status') status?: string,
   ) {
     const pageNum = page ? parseInt(page, 10) : 1;
     const limitNum = limit ? parseInt(limit, 10) : 25;
-    return this.jobApplicationService.findAll(userId, pageNum, limitNum);
+    return this.jobApplicationService.findAll(userId, pageNum, limitNum, status);
   }
 
   @Get('stats')

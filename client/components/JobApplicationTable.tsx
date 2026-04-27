@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { format } from 'date-fns'
+import { format, formatDistanceToNow } from 'date-fns'
 import { JobApplication, ApplicationStatus } from '../types/jobApplication'
 import { useColumnConfiguration } from '../hooks/useColumnConfiguration'
 import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/24/outline'
@@ -84,6 +84,20 @@ export default function JobApplicationTable({
         return application.workType || '-'
       case 'resumeUsed':
         return application.resumeUsed || '-'
+      case 'notes':
+        if (!application.notes) return '-'
+        return (
+          <span title={application.notes} className="block max-w-xs truncate">
+            {application.notes}
+          </span>
+        )
+      case 'updatedAt':
+        if (!application.updatedAt) return '-'
+        return (
+          <span title={format(new Date(application.updatedAt), 'MMM dd, yyyy HH:mm')}>
+            {formatDistanceToNow(new Date(application.updatedAt), { addSuffix: true })}
+          </span>
+        )
       default:
         return '-'
     }

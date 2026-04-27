@@ -8,12 +8,17 @@ const api = axios.create({
   baseURL: `${API_BASE_URL}/api`,
 })
 
-export const useJobApplications = (userId?: string, page = 1, limit = 25) => {
+export const useJobApplications = (
+  userId?: string,
+  page = 1,
+  limit = 25,
+  status?: string,
+) => {
   return useQuery({
-    queryKey: ['jobApplications', userId, page, limit],
+    queryKey: ['jobApplications', userId, page, limit, status ?? ''],
     queryFn: async (): Promise<PaginatedResponse<JobApplication>> => {
       const { data } = await api.get(`/job-applications`, {
-        params: { userId, page, limit }
+        params: { userId, page, limit, ...(status ? { status } : {}) }
       })
       return data
     },
